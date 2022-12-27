@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\LoginRequest;
+use App\Http\Requests\API\RegisterRequest;
 use App\Http\Resources\API\LoginResources;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -33,10 +34,22 @@ class ApiAuthController extends Controller
     }
 
 
+    public function register(RegisterRequest $request)
+    {
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
 
+        $token = $user->createToken('token')->plainTextToken;
 
+        return new LoginRequest([
+              'token' => $token,
+             'user' => $user,
+        ]);
 
-
+    }
 
     public function logout(Request $request)
     {
